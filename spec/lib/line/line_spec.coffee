@@ -23,12 +23,12 @@ describe 'Morris.Line', ->
       ykeys: ['y']
       labels: ['dontcare']
       pointStrokeColors: [red, blue]
-      pointWidths: [1, 2]
+      pointStrokeWidths: [1, 2]
       pointFillColors: [null, red]
-    chart.strokeWidthForSeries(0).should.equal 1
-    chart.strokeForSeries(0).should.equal red
-    chart.strokeWidthForSeries(1).should.equal 2
-    chart.strokeForSeries(1).should.equal blue
+    chart.pointStrokeWidthForSeries(0).should.equal 1
+    chart.pointStrokeColorForSeries(0).should.equal red
+    chart.pointStrokeWidthForSeries(1).should.equal 2
+    chart.pointStrokeColorForSeries(1).should.equal blue
     chart.colorFor(chart.data[0], 0, 'point').should.equal chart.colorFor(chart.data[0], 0, 'line')
     chart.colorFor(chart.data[1], 1, 'point').should.equal red
 
@@ -64,8 +64,29 @@ describe 'Morris.Line', ->
         labels: ['dontcare']
         dateFormat: (d) ->
           x = new Date(d)
-          "#{x.getYear()}/#{x.getMonth()+1}/#{x.getDay()}"
-      chart.data.map((x) -> x.label).should == ['2012/1/1', '2012/1/2']
+          "#{x.getYear()+1900}/#{x.getMonth()+1}/#{x.getDay()+1}"
+      chart.data.map((x) -> x.label).should.eql(['2012/1/1', '2012/1/2'])
+
+    it 'should use user-defined labels', ->
+      chart = Morris.Line
+        element: 'graph'
+        data: [{x:1,y:2}],
+        xkey: 'x',
+        ykeys: ['y'],
+        labels: ['dontcare']
+        customLabels: [{x:3,label:'label'}]
+      chart.options.customLabels.map((x) -> x.label).should.eql(['label'])
+
+    it 'should use relative x-coordinates', ->
+      chart = Morris.Line
+        element: 'graph'
+        data: [{x:1,y:2}, {x:1.2,y:2}],
+        xkey: 'x',
+        ykeys: ['y'],
+        labels: ['dontcare']
+        parseTime: false
+        freePosition: true
+      [chart.data[1].x - chart.data[0].x].should.not.equal(1) 
 
   describe 'rendering lines', ->
     beforeEach ->
@@ -77,7 +98,6 @@ describe 'Morris.Line', ->
         labels: ['y', 'z']
         lineColors: ['#abcdef', '#fedcba']
         smooth: true
-        continuousLine: false
 
     shouldHavePath = (regex, color = '#abcdef') ->
       # Matches an SVG path element within the rendered chart.
@@ -104,15 +124,15 @@ describe 'Morris.Line', ->
       Morris.Line @defaults
       shouldHavePath /M[\d\.]+,[\d\.]+(C[\d\.]+(,[\d\.]+){5}){3}/
 
-    it 'should ignore null values when options.continuousLine is true', ->
-      @defaults.data[2].y = null
-      Morris.Line $.extend(@defaults, continuousLine: true)
-      shouldHavePath /M[\d\.]+,[\d\.]+(C[\d\.]+(,[\d\.]+){5}){3}/
-
-    it 'should break the line at null values when options.continuousLine is false', ->
+    it 'should break the line at null values', ->
       @defaults.data[2].y = null
       Morris.Line @defaults
       shouldHavePath /(M[\d\.]+,[\d\.]+C[\d\.]+(,[\d\.]+){5}){2}/
+
+    it 'should make line width customizable', ->
+      chart = Morris.Line $.extend(@defaults, lineWidth: [1, 2])
+      chart.lineWidthForSeries(0).should.equal 1
+      chart.lineWidthForSeries(1).should.equal 2
 
   describe '#createPath', ->
 
@@ -175,12 +195,13 @@ describe 'Morris.Line', ->
       labels: ['Y', 'Z']
       lineColors: [ '#0b62a4', '#7a92a3']
       lineWidth: 3
-      pointWidths: [5]
+      pointStrokeWidths: [5]
       pointStrokeColors: ['#ffffff']
       gridLineColor: '#aaa'
       gridStrokeWidth: 0.5
       gridTextColor: '#888'
       gridTextSize: 12
+      pointSize: [5]
 
     it 'should have circles with configured fill color', ->
       chart = Morris.Line $.extend {}, defaults
@@ -205,3 +226,7 @@ describe 'Morris.Line', ->
     it 'should have text with configured font size', ->
       chart = Morris.Line $.extend {}, defaults
       $('#graph').find("text[fill='#888888']").size().should.equal 9
+
+    it 'should have circle with configured size', ->
+      chart = Morris.Line $.extend {}, defaults
+      $('#graph').find("circle[r='5']").size().should.equal 2

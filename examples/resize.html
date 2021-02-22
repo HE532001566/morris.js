@@ -8,31 +8,35 @@
   <link rel="stylesheet" href="lib/example.css">
   <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/prettify/r224/prettify.min.css">
   <link rel="stylesheet" href="../morris.css">
+  <style>
+    body { width: 100%; }
+    #graph { width: 100%; }
+  </style>
 </head>
 <body>
-<h1>Formatting Dates with YYYY-MM</h1>
+<h1>Formatting Dates YYYY-MM-DD</h1>
 <div id="graph"></div>
 <pre id="code" class="prettyprint linenums">
 /* data stolen from http://howmanyleft.co.uk/vehicle/jaguar_'e'_type */
-var month_data = [
-  {"period": "2012-10", "licensed": 3407, "sorned": 660},
-  {"period": "2011-08", "licensed": 3351, "sorned": 629},
-  {"period": "2011-03", "licensed": 3269, "sorned": 618},
-  {"period": "2010-08", "licensed": 3246, "sorned": 661},
-  {"period": "2010-05", "licensed": 3257, "sorned": 667},
-  {"period": "2010-03", "licensed": 3248, "sorned": 627},
-  {"period": "2010-01", "licensed": 3171, "sorned": 660},
-  {"period": "2009-12", "licensed": 3171, "sorned": 676},
-  {"period": "2009-10", "licensed": 3201, "sorned": 656},
-  {"period": "2009-09", "licensed": 3215, "sorned": 622}
+var day_data = [
+  {"period": "2012-10-01", "licensed": 3407, "sorned": 660},
+  {"period": "2012-09-30", "licensed": 3351, "sorned": 629},
+  {"period": "2012-09-29", "licensed": 3269, "sorned": 618},
+  {"period": "2012-09-20", "licensed": 3246, "sorned": 661},
+  {"period": "2012-09-19", "licensed": 3257, "sorned": 667},
+  {"period": "2012-09-18", "licensed": 3248, "sorned": 627},
+  {"period": "2012-09-17", "licensed": 3171, "sorned": 660},
+  {"period": "2012-09-16", "licensed": 3171, "sorned": 676},
+  {"period": "2012-09-15", "licensed": 3201, "sorned": 656},
+  {"period": "2012-09-10", "licensed": 3215, "sorned": 622}
 ];
 Morris.Line({
   element: 'graph',
-  data: month_data,
+  data: day_data,
   xkey: 'period',
   ykeys: ['licensed', 'sorned'],
   labels: ['Licensed', 'SORN'],
-  smooth: false
+  resize: true
 });
 </pre>
 </body>
